@@ -17,7 +17,9 @@ def amplitud(matriz, pos = [0,0], goals_number=1):
         print(node.cajas_obtenidas, " cajas")
         print(node.pos, " pos")
         if  cajas == goals_number:
-            print('Costo final', node.costo)
+            node.mostrar_costo()
+            node.mostrar_profundidad()
+            node.trayectoria()
             return node
 
         #Expandir
@@ -35,7 +37,8 @@ def amplitud(matriz, pos = [0,0], goals_number=1):
                     padre=node,
                     profundidad=node.profundidad + 1,
                     costo=node.costo + movimiento["costo"],
-                    cajas_obtenidas=node.cajas_obtenidas
+                    cajas_obtenidas=node.cajas_obtenidas,
+                    operador=movimiento["operador"]
                 )
                 
                 if not nuevo_nodo.es_estado_repetido():

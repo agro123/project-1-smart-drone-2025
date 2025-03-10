@@ -7,12 +7,6 @@ class SearchType(Enum):
     AVARA = 3
     A_START = 4
 
-class Movement(Enum):
-    LEFT = 1
-    TOP = 2
-    DOWN = 3
-    RIGHT = 4
-
 #tipo_busqueda, matriz => resultados (por definir su estructura)
 def busqueda(search_type, matriz):
     initial_pos = [0,0] # [fila,columna]: posicion del valor 2 en la matriz
