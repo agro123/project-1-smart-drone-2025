@@ -17,11 +17,12 @@ def busqueda(search_type, matriz):
     print(f"Posición inicial Dron: ({initial_pos[0]}, {initial_pos[1]})")
     print(f"Número de paquetes por recoger: {goals_number}")
     if SearchType(search_type) == SearchType.AMPLITUD:
-        amplitud(matriz, initial_pos, goals_number)
+        return amplitud(matriz, initial_pos, goals_number)
     if SearchType(search_type) == SearchType.COSTO_UNIFORME:
-        costo_uniforme(matriz, initial_pos, goals_number)
+        return costo_uniforme(matriz, initial_pos, goals_number)
     else:
         print('to do')
+        return None
 
 
 exampleValue = [[1, 1, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 0, 1, 0, 1, 0, 1, 1, 1], [0, 2, 0, 3, 4, 4, 0, 0, 0, 0], [0, 1, 1, 1, 0, 1, 1, 1, 1, 0], [0, 1, 1, 1, 0, 0, 0, 0, 0, 0], [3, 3, 0, 1, 0, 1, 1, 1, 1, 1], [1, 1, 0, 1, 0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 1, 1, 1, 1, 1, 0], [1, 1, 0, 0, 0, 0, 4, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]

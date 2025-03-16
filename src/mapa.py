@@ -208,12 +208,17 @@ class InterfazDronGUI:
 
         tipo_busqueda = self.tipo_busqueda.get()
         algoritmo = self.algoritmo.get()
-
-        if algoritmo:
-            busqueda(algoritmo, self.map)
+        result = None
+        if algoritmo and tipo_busqueda:
+            result = busqueda(algoritmo, self.map)
             messagebox.showinfo("Búsqueda", f"Ejecutando búsqueda {tipo_busqueda} con {algoritmo}...")
         else:
             messagebox.showerror("Error", "Seleccione un algoritmo de búsqueda.")
+
+        if result:
+            #todo
+            #result es tipo nodo
+            print('implementar animacion')
 
     def start(self): 
         if not self.map:
