@@ -1,4 +1,4 @@
-from mapa import MAP_SIZE
+from helpers import MAP_SIZE
 from enum import Enum
 class Movement(Enum):
     LEFT = 1
@@ -17,7 +17,7 @@ class Nodo:
         self.padre = padre
         self.operador = operador
         self.profundidad = profundidad
-        self.costo = costo
+        self.costo = costo #costo acumulado
         self.cajas_obtenidas = cajas_obtenidas
         self.pos = pos
 
@@ -25,7 +25,7 @@ class Nodo:
     def ir_izquierda(self, matriz):
         columna = self.pos[1] - 1
         #Verificar que no supere las dimensiones de la matriz
-        if columna < 0:
+        if columna < 0 or (self.padre and self.padre.pos == [self.pos[0], columna]):
             return {"valor": 1}
 
         return {
@@ -37,7 +37,7 @@ class Nodo:
     
     def ir_arriba(self, matriz):
         fila = self.pos[0] - 1
-        if fila < 0:
+        if fila < 0 or (self.padre and self.padre.pos == [fila, self.pos[1]]):
             return {"valor": 1}
 
         return {
@@ -49,7 +49,7 @@ class Nodo:
 
     def ir_derecha(self, matriz):
         columna = self.pos[1] + 1
-        if columna > MAP_SIZE - 1:
+        if columna > MAP_SIZE - 1 or (self.padre and self.padre.pos == [self.pos[0], columna]):
             return {"valor": 1}
 
         return {
@@ -61,7 +61,7 @@ class Nodo:
 
     def ir_abajo(self, matriz):
         fila = self.pos[0] + 1
-        if fila > MAP_SIZE - 1:
+        if fila > MAP_SIZE - 1 or (self.padre and self.padre.pos == [fila, self.pos[1]]):
             return {"valor": 1}
         return {
             "valor": matriz[fila][self.pos[1]],
@@ -105,4 +105,7 @@ class Nodo:
         resultado.reverse()  # Invertimos la trayectoria para que sea del inicio al final
         print('Trayectoria:', resultado)
         return resultado
+
+    def __lt__(self, otroNodo):
+        return self.costo < otroNodo.costo
 

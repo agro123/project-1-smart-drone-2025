@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
 import os
-
-MAP_SIZE = 10
+from busqueda import busqueda
+from helpers import MAP_SIZE
 
 class InterfazDronGUI:
     def __init__(self):
@@ -208,24 +208,17 @@ class InterfazDronGUI:
 
         tipo_busqueda = self.tipo_busqueda.get()
         algoritmo = self.algoritmo.get()
-
-        if tipo_busqueda == "No informada" and algoritmo == "Amplitud":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda en amplitud...")
-            # Aquí iría la lógica de la búsqueda en amplitud
-        elif tipo_busqueda == "No informada" and algoritmo == "Costo uniforme":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda de costo uniforme...")
-            # Aquí iría la lógica de la búsqueda de costo uniforme
-        elif tipo_busqueda == "No informada" and algoritmo == "Profundidad evitando ciclos":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda en profundidad evitando ciclos...")
-            # Aquí iría la lógica de la búsqueda en profundidad evitando ciclos
-        elif tipo_busqueda == "Informada" and algoritmo == "Avara":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda avara...")
-            # Aquí iría la lógica de la búsqueda avara
-        elif tipo_busqueda == "Informada" and algoritmo == "A*":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda A*...")
-            # Aquí iría la lógica de la búsqueda A*
+        result = None
+        if algoritmo and tipo_busqueda:
+            result = busqueda(algoritmo, self.map)
+            messagebox.showinfo("Búsqueda", f"Ejecutando búsqueda {tipo_busqueda} con {algoritmo}...")
         else:
-            messagebox.showerror("Error", "Algoritmo no implementado o incorrecto.")
+            messagebox.showerror("Error", "Seleccione un algoritmo de búsqueda.")
+
+        if result:
+            #todo
+            #result es tipo nodo
+            print('implementar animacion')
 
     def start(self): 
         if not self.map:
