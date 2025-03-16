@@ -1,16 +1,6 @@
-from typing import List
 from nodo import Nodo
-from collections import deque
 import heapq
 
-
-def insertar_ordenado(lista: List[Nodo], nodo: Nodo) -> List[Nodo]:
-    for i, n in enumerate(lista):
-        if nodo.costo < n.costo:
-            lista.insert(i, nodo)
-            return lista
-    lista.append(nodo)
-    return lista
 
 def costo_uniforme(matriz, pos = [0,0], goals_number=1):
     queue = [] # Para almacenar los nodos

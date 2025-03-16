@@ -1,4 +1,4 @@
-from mapa import MAP_SIZE
+from helpers import MAP_SIZE
 from enum import Enum
 class Movement(Enum):
     LEFT = 1
