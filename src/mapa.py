@@ -89,7 +89,7 @@ class InterfazDronGUI:
 
         self.boton_buscar = tk.Button(
             self.frame_botones,
-            text="Buscar y Llevar",
+            text="Buscar y Recoger",
             font=("Arial", 14, "bold"),
             bg='#3498DB',
             fg='white',
