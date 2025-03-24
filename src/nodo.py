@@ -12,14 +12,21 @@ def get_cell_cost(value):
     else:
         return 1
     
+#Retorna la menor distancia de manhattan entre una posición y los objetivos
+def menor_distancia_manhattan(currPos, objetivos):
+    if len(objetivos) == 0:
+        return 0
+    return min(objetivos, key=lambda objetivo: abs(currPos[0] - objetivo[0]) + abs(currPos[1] - objetivo[1]))
+    
 class Nodo:
-    def __init__(self, pos=None, padre=None, operador=None, profundidad=0, costo=0, cajas_obtenidas = 0):
+    def __init__(self, pos=None, padre=None, operador=None, profundidad=0, costo=0, cajas_obtenidas = 0, posicion_objetivos = []):
         self.padre = padre
         self.operador = operador
         self.profundidad = profundidad
         self.costo = costo #costo acumulado
         self.cajas_obtenidas = cajas_obtenidas
         self.pos = pos
+        self.h = menor_distancia_manhattan(pos, posicion_objetivos)
 
     #Verificar el costo de ir a algun lado
     def ir_izquierda(self, matriz):
@@ -105,7 +112,3 @@ class Nodo:
         resultado.reverse()  # Invertimos la trayectoria para que sea del inicio al final
         print('Trayectoria:', resultado)
         return resultado
-
-    def __lt__(self, otroNodo):
-        return self.costo < otroNodo.costo
-
