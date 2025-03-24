@@ -16,7 +16,7 @@ def get_cell_cost(value):
 def menor_distancia_manhattan(currPos, objetivos):
     if len(objetivos) == 0:
         return 0
-    return min(objetivos, key=lambda objetivo: abs(currPos[0] - objetivo[0]) + abs(currPos[1] - objetivo[1]))
+    return min(abs(currPos[0] - obj[0]) + abs(currPos[1] - obj[1]) for obj in objetivos)
     
 class Nodo:
     def __init__(self, pos=None, padre=None, operador=None, profundidad=0, costo=0, cajas_obtenidas = 0, posicion_objetivos = []):
