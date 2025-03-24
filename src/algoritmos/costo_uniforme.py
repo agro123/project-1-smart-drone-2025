@@ -1,19 +1,27 @@
 from nodo import Nodo
-import heapq
+from collections import deque
+
+def insertar_ordenado(lista: deque[Nodo], nodo: Nodo) -> deque[Nodo]:
+    for i, n in enumerate(lista):
+        if nodo.costo < n.costo:
+            lista.insert(i, nodo)
+            return lista
+    lista.append(nodo)
+    return lista
 
 
 def costo_uniforme(matriz, pos = [0,0], goals_number=1):
-    queue = [] # Para almacenar los nodos
+    queue = deque()
     nodo_inicial = Nodo(pos=pos)
+    queue.append(nodo_inicial)
 
-    heapq.heappush(queue, (nodo_inicial.costo, nodo_inicial))
     index = 1
 
     while queue:
         print('Iteracion ', index)
         index = index + 1
 
-        node = heapq.heappop(queue)[1]
+        node = queue.popleft()
 
         #Verificar si se completaron los paquetes
         cajas = node.verificar_caja(matriz)
@@ -44,7 +52,7 @@ def costo_uniforme(matriz, pos = [0,0], goals_number=1):
                     operador=movimiento["operador"]
                 )
                 if not nuevo_nodo.es_estado_repetido():
-                    heapq.heappush(queue, (nuevo_nodo.costo, nuevo_nodo))
+                    queue = insertar_ordenado(queue, nuevo_nodo)
 
     print('Sin solucion')
     return None
