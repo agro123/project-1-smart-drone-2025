@@ -44,7 +44,7 @@ class Nodo:
         elif(movement == Movement.DOWN):
             fila = fila + 1
         #Verificar que no supere las dimensiones de la matriz
-        if fila < 0 or columna < 0 or columna > MAP_SIZE - 1 or fila > MAP_SIZE - 1:
+        if fila < 0 or columna < 0 or columna > MAP_SIZE - 1 or fila > MAP_SIZE - 1 or (self.padre and self.padre.pos == (fila, columna)):
             return {"valor": 1}
 
         return {
@@ -68,12 +68,6 @@ class Nodo:
                 return True
             padre = padre.padre
         return False
-
-    def no_devolverse(self):
-        #Para evitar devolverse
-        if self.padre is None:
-            return True
-        return self.padre.pos == self.pos
 
     def mostrar_profundidad(self):
         print(f"La profundidad del nodo es {self.profundidad}")

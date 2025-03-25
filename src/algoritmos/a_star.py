@@ -14,7 +14,7 @@ def a_star(matriz, pos = (0,0), goals_positions = []):
     nodo_inicial = Nodo(pos=pos, posicion_objetivos=goals_positions)
     queue.append(nodo_inicial)
 
-    index = 1
+    index = 0
 
     while queue:
         index = index + 1
