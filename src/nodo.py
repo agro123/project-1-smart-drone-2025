@@ -1,10 +1,13 @@
 from helpers import MAP_SIZE
 from enum import Enum
+from typing import List
+import copy
+
 class Movement(Enum):
     LEFT = 1
     TOP = 2
-    DOWN = 3
-    RIGHT = 4
+    RIGHT = 3
+    DOWN = 4
 
 def get_cell_cost(value):
     if value == 3:
@@ -19,77 +22,56 @@ def menor_distancia_manhattan(currPos, objetivos):
     return min(abs(currPos[0] - obj[0]) + abs(currPos[1] - obj[1]) for obj in objetivos)
     
 class Nodo:
-    def __init__(self, pos=None, padre=None, operador=None, profundidad=0, costo=0, cajas_obtenidas = 0, posicion_objetivos = []):
+    def __init__(self, pos=(0,0), padre=None, operador=None, profundidad=0, costo=0, posicion_objetivos = []):
         self.padre = padre
         self.operador = operador
         self.profundidad = profundidad
         self.costo = costo #costo acumulado
-        self.cajas_obtenidas = cajas_obtenidas
         self.pos = pos
-        self.h = menor_distancia_manhattan(pos, posicion_objetivos)
+        self.posicion_objetivos = copy.deepcopy(posicion_objetivos)
+        self.h = menor_distancia_manhattan(pos, self.posicion_objetivos)
+        self.hg = self.h + self.costo
 
-    #Verificar el costo de ir a algun lado
-    def ir_izquierda(self, matriz):
-        columna = self.pos[1] - 1
+    def ir(self, matriz: List[List[int]], movement: Movement):
+        fila = self.pos[0]
+        columna = self.pos[1]
+        if(movement == Movement.LEFT):
+            columna = columna - 1
+        elif(movement == Movement.TOP):
+            fila = fila - 1
+        elif(movement == Movement.RIGHT):
+            columna = columna + 1
+        elif(movement == Movement.DOWN):
+            fila = fila + 1
         #Verificar que no supere las dimensiones de la matriz
-        if columna < 0 or (self.padre and self.padre.pos == [self.pos[0], columna]):
+        if fila < 0 or columna < 0 or columna > MAP_SIZE - 1 or fila > MAP_SIZE - 1:
             return {"valor": 1}
 
         return {
-            "valor": matriz[self.pos[0]][columna],
-            "n_pos": [self.pos[0], columna],
-            "costo": get_cell_cost(matriz[self.pos[0]][columna]),
-            "operador": Movement.LEFT
-        }
-    
-    def ir_arriba(self, matriz):
-        fila = self.pos[0] - 1
-        if fila < 0 or (self.padre and self.padre.pos == [fila, self.pos[1]]):
-            return {"valor": 1}
-
-        return {
-            "valor": matriz[fila][self.pos[1]],
-            "n_pos": [fila, self.pos[1]],
-            "costo": get_cell_cost(matriz[fila][self.pos[1]]),
-            "operador": Movement.TOP
+            "valor": matriz[fila][columna],
+            "n_pos": (fila, columna),
+            "costo": get_cell_cost(matriz[fila][columna]),
+            "operador": movement
         }
 
-    def ir_derecha(self, matriz):
-        columna = self.pos[1] + 1
-        if columna > MAP_SIZE - 1 or (self.padre and self.padre.pos == [self.pos[0], columna]):
-            return {"valor": 1}
+    def verificar_caja(self):
+        if  self.pos in self.posicion_objetivos:
+            self.posicion_objetivos.remove(self.pos)
+        
+        return len(self.posicion_objetivos)
 
-        return {
-            "valor": matriz[self.pos[0]][columna],
-            "n_pos": [self.pos[0], columna],
-            "costo": get_cell_cost(matriz[self.pos[0]][columna]),
-            "operador": Movement.RIGHT
-        }
-
-    def ir_abajo(self, matriz):
-        fila = self.pos[0] + 1
-        if fila > MAP_SIZE - 1 or (self.padre and self.padre.pos == [fila, self.pos[1]]):
-            return {"valor": 1}
-        return {
-            "valor": matriz[fila][self.pos[1]],
-            "n_pos": [fila, self.pos[1]],
-            "costo": get_cell_cost(matriz[fila][self.pos[1]]),
-            "operador": Movement.DOWN
-        }
-    
-    def verificar_caja(self, matriz):
-        if  matriz[self.pos[0]][self.pos[1]] == 4:
-            self.cajas_obtenidas = self.cajas_obtenidas + 1
-        return self.cajas_obtenidas
-
-    def es_estado_repetido(self):
-        #Para evitar devolverse
+    def evitar_ciclos(self):
+        #Para evitar ciclos
         padre = self.padre
         while padre:
             if padre.pos == self.pos:
-                return True  # Ya visitamos esta posición
+                return True
             padre = padre.padre
         return False
+
+    def no_devolverse(self):
+        #Para evitar devolverse
+        return self.padre.pos == self.pos
 
     def mostrar_profundidad(self):
         print(f"La profundidad del nodo es {self.profundidad}")
