@@ -28,8 +28,8 @@ def amplitud(matriz, pos = (0,0), goals_positions = []):
         #Expandir
         movimientos = [
             Movement.LEFT,
-            Movement.RIGHT,
             Movement.TOP,
+            Movement.RIGHT,
             Movement.DOWN
         ]
 
@@ -41,7 +41,7 @@ def amplitud(matriz, pos = (0,0), goals_positions = []):
                     padre=node,
                     profundidad=node.profundidad + 1,
                     costo=node.costo + nueva_pos["costo"],
-                    operador=nueva_pos["operador"],
+                    operador=movimiento,
                     posicion_objetivos=node.posicion_objetivos
                 )
                 if not nuevo_nodo.evitar_ciclos():

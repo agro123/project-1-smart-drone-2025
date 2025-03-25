@@ -71,6 +71,8 @@ class Nodo:
 
     def no_devolverse(self):
         #Para evitar devolverse
+        if self.padre is None:
+            return True
         return self.padre.pos == self.pos
 
     def mostrar_profundidad(self):
