@@ -84,9 +84,9 @@ class Nodo:
 
         while nodo_actual:
             if nodo_actual.operador is not None:  # Evitar agregar operador de nodo raíz
-                resultado.append(nodo_actual.operador)
+                resultado.append(nodo_actual.pos)
             nodo_actual = nodo_actual.padre
 
         resultado.reverse()  # Invertimos la trayectoria para que sea del inicio al final
-        print('Trayectoria:', resultado)
+        #print('Trayectoria:', resultado)
         return resultado
