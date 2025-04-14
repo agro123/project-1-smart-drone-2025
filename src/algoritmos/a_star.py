@@ -30,7 +30,7 @@ def a_star(matriz, pos = (0,0), goals_positions = []):
             node.mostrar_costo()
             node.mostrar_profundidad()
             print('Solucion encontrada')
-            return node
+            return [node, index]
 
         #Expandir
         movimientos = [

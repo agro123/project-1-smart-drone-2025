@@ -14,7 +14,7 @@ def avara(matriz, pos = (0,0), goals_positions = []):
     nodo_inicial = Nodo(pos=pos, posicion_objetivos=goals_positions)
     queue.append(nodo_inicial)
 
-    index = 1
+    index = 0
 
     while queue:
         index = index + 1
@@ -30,7 +30,7 @@ def avara(matriz, pos = (0,0), goals_positions = []):
             node.mostrar_costo()
             node.mostrar_profundidad()
             print('Solucion encontrada')
-            return node
+            return [node, index]
 
         #Expandir
         movimientos = [
