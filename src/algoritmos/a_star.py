@@ -3,7 +3,7 @@ from collections import deque
 
 def insertar_ordenado(lista: deque[Nodo], nodo: Nodo) -> deque[Nodo]:
     for i, n in enumerate(lista):
-        if nodo.hg < n.hg:
+        if nodo.hg <= n.hg:
             lista.insert(i, nodo)
             return lista
     lista.append(nodo)
@@ -29,7 +29,6 @@ def a_star(matriz, pos = (0,0), goals_positions = []):
         if  cajas_restantes == 0:
             node.mostrar_costo()
             node.mostrar_profundidad()
-            node.trayectoria()
             print('Solucion encontrada')
             return node
 

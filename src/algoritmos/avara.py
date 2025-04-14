@@ -3,13 +3,13 @@ from collections import deque
 
 def insertar_ordenado(lista: deque[Nodo], nodo: Nodo) -> deque[Nodo]:
     for i, n in enumerate(lista):
-        if nodo.h < n.h:
+        if nodo.h <= n.h:
             lista.insert(i, nodo)
             return lista
     lista.append(nodo)
     return lista
 
-def avara(matriz, pos = [0,0], goals_positions = []):
+def avara(matriz, pos = (0,0), goals_positions = []):
     queue = deque()
     nodo_inicial = Nodo(pos=pos, posicion_objetivos=goals_positions)
     queue.append(nodo_inicial)
@@ -29,7 +29,6 @@ def avara(matriz, pos = [0,0], goals_positions = []):
         if  cajas_restantes == 0:
             node.mostrar_costo()
             node.mostrar_profundidad()
-            node.trayectoria()
             print('Solucion encontrada')
             return node
 

@@ -26,7 +26,6 @@ def busqueda(search_type, matriz):
     if SearchType(search_type) == SearchType.A_START:
         return a_star(matriz, initial_pos, goalsPos)
     else:
-        print('to do')
         return None
 
 

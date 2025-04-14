@@ -12,7 +12,7 @@ def amplitud(matriz, pos = (0,0), goals_positions = []):
         index = index + 1
         print('Iteracion ', index)
     
-        node = queue.popleft()
+        node: Nodo = queue.popleft()
         print("Posición ", node.pos)
 
         #Verificar si se completaron los paquetes
@@ -21,7 +21,6 @@ def amplitud(matriz, pos = (0,0), goals_positions = []):
         if  cajas_restantes == 0:
             node.mostrar_costo()
             node.mostrar_profundidad()
-            node.trayectoria()
             print('Solucion encontrada')
             return node
 

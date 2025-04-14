@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
 import os
+from busqueda import busqueda
+import copy
+from collections import deque
 
 MAP_SIZE = 10
 
@@ -99,6 +102,17 @@ class InterfazDronGUI:
         )
         self.boton_buscar.pack(side=tk.LEFT, padx=10)
 
+        self.boton_reiniciar = tk.Button(
+            self.frame_botones,
+            text="Reiniciar",
+            font=("Arial", 14, "bold"),
+            bg='#2ECC71',
+            fg='white',
+            width=15,
+            command=self.reiniciar_mapa
+        )
+        self.boton_reiniciar.pack(side=tk.LEFT, padx=10)
+
         self.frame_seleccion = tk.Frame(self.ventana, bg='#2C3E50')
         self.frame_seleccion.pack(fill='x', pady=10)
 
@@ -139,7 +153,34 @@ class InterfazDronGUI:
         )
         self.menu_algoritmo.pack(side=tk.LEFT, padx=10)
 
+        self.frame_info = tk.Frame(self.ventana, bg='#2C3E50')
+        self.frame_info.pack(fill='x', pady=10)
+        self.label_costo = tk.Label(
+            self.frame_info,
+            text="Costo: N/A",
+            bg='#2C3E50',
+            fg='white',
+            font=("Arial", 12)
+        )
+        self.label_costo.pack(side=tk.LEFT, padx=20)
+
+        self.label_profundidad = tk.Label(
+            self.frame_info,
+            text="Profundidad: N/A",
+            bg='#2C3E50',
+            fg='white',
+            font=("Arial", 12)
+        )
+        self.label_profundidad.pack(side=tk.LEFT, padx=20)
+
         self.cargar_imagenes()
+
+    def reiniciar_mapa(self):
+        """Recarga el mapa original desde el archivo"""
+        if not self.archivo_mapa:
+            messagebox.showerror("Error", "No hay mapa cargado para reiniciar.")
+            return
+        self.dibujar_mapa()
 
     def actualizar_algoritmos(self, event):
         tipo_busqueda = self.tipo_busqueda.get()
@@ -181,25 +222,30 @@ class InterfazDronGUI:
         
         with open(self.archivo_mapa, "r") as file:
             matriz = [list(map(int, line.split())) for line in file]
-
         self.canvas.delete("all")
-        tam_celda = 50
 
-        # Colores de fondo
-        colores = {0: '#BDC3C7', 1: '#7F8C8D'}  # Libre y obstáculos
         self.map = matriz
         for i, fila in enumerate(matriz):
             for j, valor in enumerate(fila):
-                x1, y1 = j * tam_celda, i * tam_celda
-                x2, y2 = x1 + tam_celda, y1 + tam_celda
-                color = colores.get(valor, 'white')
+                self.dibujar_celda(i, j)
 
-                # Dibuja el fondo de la celda
-                self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline='#34495E')
-
-                # Si hay un ícono (dron, paquete, campo electromagnético), lo dibuja
-                if valor in self.imagenes:
-                    self.canvas.create_image(x1 + 25, y1 + 25, image=self.imagenes[valor])
+    def dibujar_celda(self, i, j, matriz=None):
+            tam_celda = 50
+            x1, y1 = j * tam_celda, i * tam_celda
+            x2, y2 = x1 + tam_celda, y1 + tam_celda
+            valor = None
+            if matriz:
+                valor = matriz[i][j]
+            else:
+                valor = self.map[i][j]
+            # Colores de fondo
+            colores = {0: '#BDC3C7', 1: '#7F8C8D', 5: '#F1C40F'} # Libre y obstáculos
+            color = colores.get(valor, 'white')
+            # Dibuja el fondo de la celda
+            self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline='#34495E')
+            # Si hay un ícono (dron, paquete, campo electromagnético), lo dibuja
+            if valor in self.imagenes:
+                self.canvas.create_image(x1 + 25, y1 + 25, image=self.imagenes[valor])
 
     def ejecutar_busqueda(self):
         if not self.archivo_mapa:
@@ -209,23 +255,56 @@ class InterfazDronGUI:
         tipo_busqueda = self.tipo_busqueda.get()
         algoritmo = self.algoritmo.get()
 
-        if tipo_busqueda == "No informada" and algoritmo == "Amplitud":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda en amplitud...")
-            # Aquí iría la lógica de la búsqueda en amplitud
-        elif tipo_busqueda == "No informada" and algoritmo == "Costo uniforme":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda de costo uniforme...")
-            # Aquí iría la lógica de la búsqueda de costo uniforme
-        elif tipo_busqueda == "No informada" and algoritmo == "Profundidad evitando ciclos":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda en profundidad evitando ciclos...")
-            # Aquí iría la lógica de la búsqueda en profundidad evitando ciclos
-        elif tipo_busqueda == "Informada" and algoritmo == "Avara":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda avara...")
-            # Aquí iría la lógica de la búsqueda avara
-        elif tipo_busqueda == "Informada" and algoritmo == "A*":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda A*...")
-            # Aquí iría la lógica de la búsqueda A*
+        if algoritmo and tipo_busqueda:
+            result = busqueda(algoritmo, self.map)
+            messagebox.showinfo("Búsqueda", f"Ejecutando búsqueda {tipo_busqueda} con {algoritmo}...")
         else:
-            messagebox.showerror("Error", "Algoritmo no implementado o incorrecto.")
+            messagebox.showerror("Error", "Seleccione un algoritmo de búsqueda.")
+
+        if result:
+            #result es tipo nodo
+            self.label_costo.config(text=f"Costo: {result.costo}")
+            self.label_profundidad.config(text=f"Profundidad: {result.profundidad}")
+
+            self.ejecutar_animacion(result)
+        else:
+            messagebox.showerror("Error", "Ocurrio un error en la búsqueda.")
+
+    def ejecutar_animacion(self, nodoFinal):
+        matriz = copy.deepcopy(self.map)
+        camino = deque(nodoFinal.trayectoria())  # Obtener el camino desde el nodo final
+        if not camino:
+            return
+        dron_actual = None  # Guarda la posición anterior del dron
+
+        def mover():
+            nonlocal dron_actual
+            if not camino:
+                return
+
+            i, j = camino.popleft()
+
+            # Borrar el dron anterior (volverlo 0 en matriz y redibujar)
+            if dron_actual:
+                x_old, y_old = dron_actual
+                matriz[x_old][y_old] = 5
+                self.dibujar_celda(x_old, y_old, matriz)
+
+            # Si hay un paquete, lo recoge (cambia a 0)
+            if matriz[i][j] == 4:
+                matriz[i][j] = 0  # Lo cambia a camino antes de poner el dron
+
+            # Poner el dron en la nueva posición
+            matriz[i][j] = 2
+            self.dibujar_celda(i, j, matriz)
+
+            # Guardar la posición actual como anterior para el próximo paso
+            dron_actual = (i, j)
+
+            self.ventana.after(300, mover)
+        mover()
+        #messagebox.showinfo("Resultado", f"La profundidad del arbol es {nodoFinal.profundidad} \nEl costo fue {nodoFinal.costo}")
+
 
     def start(self): 
         if not self.map:
