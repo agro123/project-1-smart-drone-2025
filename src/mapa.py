@@ -173,6 +173,24 @@ class InterfazDronGUI:
         )
         self.label_profundidad.pack(side=tk.LEFT, padx=20)
 
+        self.label_nodos_expandidos = tk.Label(
+            self.frame_info,
+            text="Nodos expandidos: N/A",
+            bg='#2C3E50',
+            fg='white',
+            font=("Arial", 12)
+        )
+        self.label_nodos_expandidos.pack(side=tk.LEFT, padx=20)
+
+        self.label_tiempo_computo = tk.Label(
+            self.frame_info,
+            text="Tiempo de cómputo: N/A",
+            bg='#2C3E50',
+            fg='white',
+            font=("Arial", 12)
+        )
+        self.label_tiempo_computo.pack(side=tk.LEFT, padx=20)
+
         self.cargar_imagenes()
 
     def reiniciar_mapa(self):
@@ -261,18 +279,21 @@ class InterfazDronGUI:
         else:
             messagebox.showerror("Error", "Seleccione un algoritmo de búsqueda.")
 
-        if result:
-            #result es tipo nodo
-            self.label_costo.config(text=f"Costo: {result.costo}")
-            self.label_profundidad.config(text=f"Profundidad: {result.profundidad}")
+        if result[0] :
+            nodo_final, nodos_expandidos, tiempo_ejecucion = result
+            #result es tipo [nodo, nodos_expandidos, tiempo_ejecucion]
+            self.label_costo.config(text=f"Costo: {nodo_final.costo}")
+            self.label_profundidad.config(text=f"Profundidad: {nodo_final.profundidad}")
+            self.label_nodos_expandidos.config(text=f"Nodos expandidos: {nodos_expandidos}")
+            self.label_tiempo_computo.config(text=f"Tiempo de cómputo: {tiempo_ejecucion} ms")
 
-            self.ejecutar_animacion(result)
+            self.ejecutar_animacion(nodo_final)
         else:
             messagebox.showerror("Error", "Ocurrio un error en la búsqueda.")
 
-    def ejecutar_animacion(self, nodoFinal):
+    def ejecutar_animacion(self, nodo_final):
         matriz = copy.deepcopy(self.map)
-        camino = deque(nodoFinal.trayectoria())  # Obtener el camino desde el nodo final
+        camino = deque(nodo_final.trayectoria())  # Obtener el camino desde el nodo final
         if not camino:
             return
         dron_actual = None  # Guarda la posición anterior del dron
@@ -303,7 +324,6 @@ class InterfazDronGUI:
 
             self.ventana.after(300, mover)
         mover()
-        #messagebox.showinfo("Resultado", f"La profundidad del arbol es {nodoFinal.profundidad} \nEl costo fue {nodoFinal.costo}")
 
 
     def start(self): 
