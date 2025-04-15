@@ -7,6 +7,7 @@ def amplitud(matriz, pos = (0,0), goals_positions = []):
     nodo_inicial = Nodo(pos=pos, posicion_objetivos=goals_positions)
     queue.append(nodo_inicial)
     index = 0
+    nodos_expandidos = 1
 
     while queue:
         index = index + 1
@@ -22,7 +23,7 @@ def amplitud(matriz, pos = (0,0), goals_positions = []):
             node.mostrar_costo()
             node.mostrar_profundidad()
             print('Solucion encontrada')
-            return [node, index]
+            return [node, nodos_expandidos]
 
         #Expandir
         movimientos = [
@@ -44,6 +45,7 @@ def amplitud(matriz, pos = (0,0), goals_positions = []):
                     posicion_objetivos=node.posicion_objetivos
                 )
                 if not nuevo_nodo.evitar_ciclos():
+                    nodos_expandidos = nodos_expandidos + 1
                     queue.append(nuevo_nodo)
     print('Sin solucion')
     return None
