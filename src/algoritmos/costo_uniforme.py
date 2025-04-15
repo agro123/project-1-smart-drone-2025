@@ -16,6 +16,7 @@ def costo_uniforme(matriz, pos = (0,0), goals_positions = []):
     queue.append(nodo_inicial)
 
     index = 0
+    nodos_expandidos = 1
 
     while queue:
         index = index + 1
@@ -32,7 +33,7 @@ def costo_uniforme(matriz, pos = (0,0), goals_positions = []):
             node.mostrar_costo()
             node.mostrar_profundidad()
             print('Solucion encontrada')
-            return [node, index]
+            return [node, nodos_expandidos]
 
         #Expandir
         movimientos = [
@@ -54,6 +55,7 @@ def costo_uniforme(matriz, pos = (0,0), goals_positions = []):
                     posicion_objetivos=node.posicion_objetivos
                 )
                 if not nuevo_nodo.evitar_ciclos():
+                    nodos_expandidos = nodos_expandidos + 1
                     queue = insertar_ordenado(queue, nuevo_nodo)
 
     print('Sin solucion')
