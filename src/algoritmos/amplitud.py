@@ -6,13 +6,14 @@ def amplitud(matriz, pos = (0,0), goals_positions = []):
     queue = deque() # Para almacenar los nodos
     nodo_inicial = Nodo(pos=pos, posicion_objetivos=goals_positions)
     queue.append(nodo_inicial)
-    index = 1
+    index = 0
+    nodos_expandidos = 1
 
     while queue:
         index = index + 1
         print('Iteracion ', index)
     
-        node = queue.popleft()
+        node: Nodo = queue.popleft()
         print("Posición ", node.pos)
 
         #Verificar si se completaron los paquetes
@@ -21,9 +22,8 @@ def amplitud(matriz, pos = (0,0), goals_positions = []):
         if  cajas_restantes == 0:
             node.mostrar_costo()
             node.mostrar_profundidad()
-            node.trayectoria()
             print('Solucion encontrada')
-            return node
+            return [node, nodos_expandidos]
 
         #Expandir
         movimientos = [
@@ -45,6 +45,7 @@ def amplitud(matriz, pos = (0,0), goals_positions = []):
                     posicion_objetivos=node.posicion_objetivos
                 )
                 if not nuevo_nodo.evitar_ciclos():
+                    nodos_expandidos = nodos_expandidos + 1
                     queue.append(nuevo_nodo)
     print('Sin solucion')
     return None

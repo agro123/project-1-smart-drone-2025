@@ -3,25 +3,26 @@ from collections import deque
 
 def insertar_ordenado(lista: deque[Nodo], nodo: Nodo) -> deque[Nodo]:
     for i, n in enumerate(lista):
-        if nodo.costo < n.costo:
+        if nodo.costo <= n.costo:
             lista.insert(i, nodo)
             return lista
     lista.append(nodo)
     return lista
 
 
-def costo_uniforme(matriz, pos = [0,0], goals_positions = []):
+def costo_uniforme(matriz, pos = (0,0), goals_positions = []):
     queue = deque()
     nodo_inicial = Nodo(pos=pos, posicion_objetivos=goals_positions)
     queue.append(nodo_inicial)
 
-    index = 1
+    index = 0
+    nodos_expandidos = 1
 
     while queue:
         index = index + 1
         print('Iteracion ', index)
 
-        node = queue.popleft()
+        node: Nodo = queue.popleft()
         print("Posición ", node.pos)
 
         #Verificar si se completaron los paquetes
@@ -31,9 +32,8 @@ def costo_uniforme(matriz, pos = [0,0], goals_positions = []):
         if  cajas_restantes == 0:
             node.mostrar_costo()
             node.mostrar_profundidad()
-            node.trayectoria()
             print('Solucion encontrada')
-            return node
+            return [node, nodos_expandidos]
 
         #Expandir
         movimientos = [
@@ -55,6 +55,7 @@ def costo_uniforme(matriz, pos = [0,0], goals_positions = []):
                     posicion_objetivos=node.posicion_objetivos
                 )
                 if not nuevo_nodo.evitar_ciclos():
+                    nodos_expandidos = nodos_expandidos + 1
                     queue = insertar_ordenado(queue, nuevo_nodo)
 
     print('Sin solucion')
