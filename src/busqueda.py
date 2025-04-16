@@ -31,4 +31,4 @@ def busqueda(search_type, matriz):
 
 
 exampleValue = [[1, 1, 0, 0, 0, 0, 0, 1, 1, 1], [1, 1, 0, 1, 0, 1, 0, 1, 1, 1], [0, 2, 0, 3, 4, 4, 0, 0, 0, 0], [0, 1, 1, 1, 0, 1, 1, 1, 1, 0], [0, 1, 1, 1, 0, 0, 0, 0, 0, 0], [3, 3, 0, 1, 0, 1, 1, 1, 1, 1], [1, 1, 0, 1, 0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 1, 1, 1, 1, 1, 0], [1, 1, 0, 0, 0, 0, 4, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
-#busqueda(SearchType.AMPLITUD, exampleValue)
+busqueda(SearchType.A_START, exampleValue)
