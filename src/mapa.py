@@ -5,14 +5,41 @@ import os
 from busqueda import busqueda
 import copy
 from collections import deque
+import pygame
+import os
 
 MAP_SIZE = 10
 
 class InterfazDronGUI:
     def __init__(self):
+
+   # Inicializar Pygame Mixer para sonidos
+        pygame.mixer.init()
+
+          # canal para otros efectos
+
+        self.sonidos = {
+           "inicio": pygame.mixer.Sound("assets/sounds/inicio.wav"),
+           "boton": pygame.mixer.Sound("assets/sounds/boton.wav"),
+           "campo": pygame.mixer.Sound("assets/sounds/campo.wav"),
+            "caja": pygame.mixer.Sound("assets/sounds/caja.wav"),
+            "buscar": pygame.mixer.Sound("assets/sounds/buscar.wav"),
+            "cargar": pygame.mixer.Sound("assets/sounds/cargar.wav"),
+             "reiniciar": pygame.mixer.Sound("assets/sounds/reiniciar.wav"),
+             
+           
+            
+        }
+         # Reproducir sonido de inicio
+        self.sonidos["inicio"].play()
+
+
+        # Configuración de la ventana principal
         self.ventana = tk.Tk()
         self.ventana.title("Dron Inteligente")
         self.ventana.configure(bg='#2C3E50')
+
+
 
         self.archivo_mapa = None
         self.map = [[0 for _ in range(MAP_SIZE)] for _ in range(MAP_SIZE)]  # Matriz por defecto
@@ -64,6 +91,9 @@ class InterfazDronGUI:
 
     def iniciar_programa(self):
         """Oculta la portada y muestra la interfaz principal"""
+        self.sonidos["inicio"].stop()
+           # Reproducir el sonido del botón al presionar el botón
+        self.sonidos["boton"].play()
         self.frame_portada.pack_forget()
         self.crear_interfaz_principal()
         self.centrar_ventana()  # Centrar la ventana después de iniciar el juego
@@ -196,6 +226,7 @@ class InterfazDronGUI:
         self.cargar_imagenes()
 
     def reiniciar_mapa(self):
+     self.sonidos["reiniciar"].play()
      """Recarga el mapa original y reinicia todos los datos"""
      if not self.archivo_mapa:
         messagebox.showerror("Error", "No hay mapa cargado para reiniciar.")
@@ -250,6 +281,7 @@ class InterfazDronGUI:
         }
 
     def cargar_archivo(self):
+        self.sonidos["cargar"].play()
         """Carga un archivo de mapa y lo dibuja"""
         archivo = filedialog.askopenfilename(filetypes=[("Archivos de texto", "*.txt")])
         if archivo:
@@ -295,6 +327,7 @@ class InterfazDronGUI:
                 self.canvas.create_image(x1 + 25, y1 + 25, image=self.imagenes[valor])
 
     def ejecutar_busqueda(self):
+        self.sonidos["buscar"].play()  # <<< sonido al presionar
         if not self.archivo_mapa:
             messagebox.showerror("Error", "No se ha cargado ningún mapa.")
             return
@@ -302,6 +335,12 @@ class InterfazDronGUI:
         tipo_busqueda = self.tipo_busqueda.get()
         algoritmo = self.algoritmo.get()
 
+      # Evita múltiples ejecuciones simultáneas
+        after_id = getattr(self, '_after_id', None)
+        if after_id is not None:
+         self.ventana.after_cancel(after_id)
+         self._after_id = None
+                 
         # Restaurar el mapa original antes de ejecutar la búsqueda
         if self.mapa_original:
          self.map = copy.deepcopy(self.mapa_original)
@@ -370,12 +409,20 @@ class InterfazDronGUI:
                 matriz[x_old][y_old] = 5
                 self.dibujar_celda(x_old, y_old, matriz)
 
+                # Reproducir sonido si entra en un campo electromagnético
+            if matriz[i][j] == 3:
+                self.sonidos["campo"].play()
+
+            
             # Si hay un paquete, lo recoge (cambia a 0)
             if matriz[i][j] == 4:
+                self.sonidos["caja"].play()
                 matriz[i][j] = 0  # Lo cambia a camino antes de poner el dron
+
 
             # Poner el dron en la nueva posición
             matriz[i][j] = 2
+            
             self.dibujar_celda(i, j, matriz)
 
             # Guardar la posición actual como anterior para el próximo paso
