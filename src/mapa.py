@@ -18,6 +18,8 @@ class InterfazDronGUI:
         self.map = [[0 for _ in range(MAP_SIZE)] for _ in range(MAP_SIZE)]  # Matriz por defecto
         self.imagenes = {}  # Diccionario para almacenar imágenes
         self.portada_mostrada = True
+        self.mapa_original = None  # Aquí guardaremos una copia del mapa original
+
 
         self.mostrar_portada()
         self.centrar_ventana()  # Centrar la ventana al iniciar
@@ -194,11 +196,35 @@ class InterfazDronGUI:
         self.cargar_imagenes()
 
     def reiniciar_mapa(self):
-        """Recarga el mapa original desde el archivo"""
-        if not self.archivo_mapa:
-            messagebox.showerror("Error", "No hay mapa cargado para reiniciar.")
-            return
+     """Recarga el mapa original y reinicia todos los datos"""
+     if not self.archivo_mapa:
+        messagebox.showerror("Error", "No hay mapa cargado para reiniciar.")
+        return
+    
+    # Cancelar cualquier animación pendiente
+     if hasattr(self, '_after_id'):
+        self.ventana.after_cancel(self._after_id)
+        del self._after_id
+    
+    # Reiniciar métricas
+     self.label_costo.config(text="Costo: N/A")
+     self.label_profundidad.config(text="Profundidad: N/A")
+     self.label_nodos_expandidos.config(text="Nodos expandidos: N/A")
+     self.label_tiempo_computo.config(text="Tiempo de cómputo: N/A")
+    
+    # Reiniciar selecciones pero manteniendo habilitados los combobox
+     self.tipo_busqueda.set("seleccione")
+     self.algoritmo.set("seleccione")
+     self.menu_algoritmo.config(values=["Búsqueda no informada - evitando ciclos"])
+     self.menu_algoritmo.config(state="readonly")  # Cambiado de DISABLED a readonly
+    
+    # Restaurar mapa original
+     if self.mapa_original:
+        self.map = copy.deepcopy(self.mapa_original)
         self.dibujar_mapa()
+    
+    # No deshabilitar el botón de buscar, solo resetear estado
+     self.boton_buscar.config(state=tk.NORMAL if self.archivo_mapa else tk.DISABLED)
 
     def actualizar_algoritmos(self, event):
         tipo_busqueda = self.tipo_busqueda.get()
@@ -211,7 +237,7 @@ class InterfazDronGUI:
 
         self.menu_algoritmo.config(values=opciones)
         self.menu_algoritmo.set(opciones[0] if opciones else "")
-        self.menu_algoritmo.config(state=tk.NORMAL if opciones else tk.DISABLED)
+        self.menu_algoritmo.config(state="readonly")  # Siempre readonly en lugar de DISABLED
 
     def cargar_imagenes(self):
         """Carga las imágenes de los íconos en un diccionario"""
@@ -228,6 +254,9 @@ class InterfazDronGUI:
         archivo = filedialog.askopenfilename(filetypes=[("Archivos de texto", "*.txt")])
         if archivo:
             self.archivo_mapa = archivo
+            with open(self.archivo_mapa , "r") as file:
+               self.mapa_original = [list(map(int, line.split())) for line in file] # Guardar una copia del mapa original
+
             messagebox.showinfo("Mapa Cargado", "Mapa cargado correctamente.")
             self.ventana.geometry("700x700")
             self.dibujar_mapa()
@@ -273,6 +302,21 @@ class InterfazDronGUI:
         tipo_busqueda = self.tipo_busqueda.get()
         algoritmo = self.algoritmo.get()
 
+        # Restaurar el mapa original antes de ejecutar la búsqueda
+        if self.mapa_original:
+         self.map = copy.deepcopy(self.mapa_original)
+         self.dibujar_mapa()
+
+
+        if algoritmo == "seleccione" or not algoritmo:
+         messagebox.showerror("Error", "Seleccione un algoritmo de búsqueda válido.")
+         return
+
+        if tipo_busqueda == "seleccione" or not tipo_busqueda:
+         messagebox.showerror("Error", "Seleccione un tipo de búsqueda válido.")
+         return
+
+
         if algoritmo and tipo_busqueda:
             result = busqueda(algoritmo, self.map)
             messagebox.showinfo("Búsqueda", f"Ejecutando búsqueda {tipo_busqueda} con {algoritmo}...")
@@ -296,7 +340,22 @@ class InterfazDronGUI:
         camino = deque(nodo_final.trayectoria())  # Obtener el camino desde el nodo final
         if not camino:
             return
-        dron_actual = None  # Guarda la posición anterior del dron
+        
+    # Limpiar cualquier dron en la matriz antes de iniciar la animación
+        for i in range(len(matriz)):
+         for j in range(len(matriz[0])):
+          if  matriz[i][j] == 2:
+             matriz[i][j] = 5
+             self.dibujar_celda(i, j, matriz)
+
+        dron_actual = None
+        
+        i_inicio, j_inicio = camino[0]
+        if matriz[i_inicio][j_inicio] == 2:
+            matriz[i_inicio][j_inicio] = 5  # O el valor que uses para "camino libre"
+            self.dibujar_celda(i_inicio, j_inicio, matriz)
+                 # Guarda la posición anterior del dron
+        
 
         def mover():
             nonlocal dron_actual
@@ -322,7 +381,7 @@ class InterfazDronGUI:
             # Guardar la posición actual como anterior para el próximo paso
             dron_actual = (i, j)
 
-            self.ventana.after(300, mover)
+            self._after_id = self.ventana.after(300, mover)
         mover()
 
 
