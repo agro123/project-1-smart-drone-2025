@@ -2,32 +2,30 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
 import os
+from busqueda import busqueda
+import copy
+from collections import deque
 
 MAP_SIZE = 10
 
 class InterfazDronGUI:
     def __init__(self):
-        """
-        Inicializa la interfaz gráfica del dron.
-        """
         self.ventana = tk.Tk()
         self.ventana.title("Dron Inteligente")
         self.ventana.configure(bg='#2C3E50')
 
-        self.archivo_mapa = None  # Archivo de mapa cargado
-        self.map = [[0 for _ in range(MAP_SIZE)] for _ in range(MAP_SIZE)]  # Matriz del mapa
+        self.archivo_mapa = None
+        self.map = [[0 for _ in range(MAP_SIZE)] for _ in range(MAP_SIZE)]  # Matriz por defecto
         self.imagenes = {}  # Diccionario para almacenar imágenes
-        self.portada_mostrada = True  # Estado de la portada
+        self.portada_mostrada = True
 
-        self.mostrar_portada()  # Mostrar la portada inicial
-        self.centrar_ventana()  # Centrar la ventana en la pantalla
+        self.mostrar_portada()
+        self.centrar_ventana()  # Centrar la ventana al iniciar
         self.ventana.mainloop()
 
     def centrar_ventana(self):
-        """
-        Centra la ventana en la pantalla.
-        """
-        self.ventana.update_idletasks()
+        """Centra la ventana en la pantalla"""
+        self.ventana.update_idletasks()  # Actualiza las dimensiones de la ventana
         ancho_ventana = self.ventana.winfo_width()
         alto_ventana = self.ventana.winfo_height()
         ancho_pantalla = self.ventana.winfo_screenwidth()
@@ -39,9 +37,7 @@ class InterfazDronGUI:
         self.ventana.geometry(f"+{x}+{y}")
 
     def mostrar_portada(self):
-        """
-        Muestra la imagen de portada con el botón de iniciar.
-        """
+        """Muestra la imagen de portada con el botón de iniciar"""
         self.frame_portada = tk.Frame(self.ventana, bg="black")
         self.frame_portada.pack(fill="both", expand=True)
 
@@ -65,17 +61,13 @@ class InterfazDronGUI:
         self.boton_iniciar.place(relx=0.5, rely=0.9, anchor="center")
 
     def iniciar_programa(self):
-        """
-        Oculta la portada y muestra la interfaz principal.
-        """
+        """Oculta la portada y muestra la interfaz principal"""
         self.frame_portada.pack_forget()
         self.crear_interfaz_principal()
-        self.centrar_ventana()
+        self.centrar_ventana()  # Centrar la ventana después de iniciar el juego
 
     def crear_interfaz_principal(self):
-        """
-        Crea la interfaz principal del juego.
-        """
+        """Crea la interfaz del juego"""
         self.ventana.geometry("700x700")
 
         self.frame_cuadricula = tk.Frame(self.ventana, bg='#34495E')
@@ -209,9 +201,6 @@ class InterfazDronGUI:
         self.dibujar_mapa()
 
     def actualizar_algoritmos(self, event):
-        """
-        Actualiza las opciones de algoritmos según el tipo de búsqueda seleccionado.
-        """
         tipo_busqueda = self.tipo_busqueda.get()
         if tipo_busqueda == "No informada":
             opciones = ["Amplitud", "Costo uniforme", "Profundidad evitando ciclos"]
@@ -225,9 +214,7 @@ class InterfazDronGUI:
         self.menu_algoritmo.config(state=tk.NORMAL if opciones else tk.DISABLED)
 
     def cargar_imagenes(self):
-        """
-        Carga las imágenes de los íconos en un diccionario.
-        """
+        """Carga las imágenes de los íconos en un diccionario"""
         ruta_assets = "assets"
 
         self.imagenes = {
@@ -237,9 +224,7 @@ class InterfazDronGUI:
         }
 
     def cargar_archivo(self):
-        """
-        Carga un archivo de mapa y lo dibuja en la interfaz.
-        """
+        """Carga un archivo de mapa y lo dibuja"""
         archivo = filedialog.askopenfilename(filetypes=[("Archivos de texto", "*.txt")])
         if archivo:
             self.archivo_mapa = archivo
@@ -249,12 +234,10 @@ class InterfazDronGUI:
             self.boton_buscar.config(state=tk.NORMAL)
 
     def dibujar_mapa(self):
-        """
-        Dibuja la cuadrícula del mapa con imágenes y colores.
-        """
+        """Dibuja la cuadrícula del mapa con imágenes y colores"""
         if not self.archivo_mapa:
             return
-
+        
         with open(self.archivo_mapa, "r") as file:
             matriz = [list(map(int, line.split())) for line in file]
         self.canvas.delete("all")
@@ -283,9 +266,6 @@ class InterfazDronGUI:
                 self.canvas.create_image(x1 + 25, y1 + 25, image=self.imagenes[valor])
 
     def ejecutar_busqueda(self):
-        """
-        Ejecuta el algoritmo de búsqueda seleccionado y muestra la trayectoria.
-        """
         if not self.archivo_mapa:
             messagebox.showerror("Error", "No se ha cargado ningún mapa.")
             return
@@ -293,21 +273,21 @@ class InterfazDronGUI:
         tipo_busqueda = self.tipo_busqueda.get()
         algoritmo = self.algoritmo.get()
 
-        if tipo_busqueda == "No informada" and algoritmo == "Amplitud":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda en amplitud...")
-            # Aquí iría la lógica de la búsqueda en amplitud
-        elif tipo_busqueda == "No informada" and algoritmo == "Costo uniforme":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda de costo uniforme...")
-            # Aquí iría la lógica de la búsqueda de costo uniforme
-        elif tipo_busqueda == "No informada" and algoritmo == "Profundidad evitando ciclos":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda en profundidad evitando ciclos...")
-            # Aquí iría la lógica de la búsqueda en profundidad evitando ciclos
-        elif tipo_busqueda == "Informada" and algoritmo == "Avara":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda avara...")
-            # Aquí iría la lógica de la búsqueda avara
-        elif tipo_busqueda == "Informada" and algoritmo == "A*":
-            messagebox.showinfo("Búsqueda", "Ejecutando búsqueda A*...")
-            # Aquí iría la lógica de la búsqueda A*
+        if algoritmo and tipo_busqueda:
+            result = busqueda(algoritmo, self.map)
+            messagebox.showinfo("Búsqueda", f"Ejecutando búsqueda {tipo_busqueda} con {algoritmo}...")
+        else:
+            messagebox.showerror("Error", "Seleccione un algoritmo de búsqueda.")
+
+        if result[0] :
+            nodo_final, nodos_expandidos, tiempo_ejecucion = result
+            #result es tipo [nodo, nodos_expandidos, tiempo_ejecucion]
+            self.label_costo.config(text=f"Costo: {nodo_final.costo}")
+            self.label_profundidad.config(text=f"Profundidad: {nodo_final.profundidad}")
+            self.label_nodos_expandidos.config(text=f"Nodos expandidos: {nodos_expandidos}")
+            self.label_tiempo_computo.config(text=f"Tiempo de cómputo: {tiempo_ejecucion} ms")
+
+            self.ejecutar_animacion(nodo_final)
         else:
             messagebox.showerror("Error", "Ocurrio un error en la búsqueda.")
 
@@ -346,37 +326,7 @@ class InterfazDronGUI:
         mover()
 
 
-    def mostrar_trayectoria(self, trayectoria):
-        """
-        Muestra la trayectoria en el mapa.
-        """
-        tam_celda = 50
-
-        for i, fila in enumerate(self.map):
-            for j, valor in enumerate(fila):
-                x1, y1 = j * tam_celda, i * tam_celda
-                x2, y2 = x1 + tam_celda, y1 + tam_celda
-
-                if (i, j) in trayectoria:
-                    self.canvas.create_rectangle(x1, y1, x2, y2, fill='yellow', outline='#34495E')
-
-        # Mover el dron a lo largo de la trayectoria
-        self.mover_dron(trayectoria)
-
-    def mover_dron(self, trayectoria, index=0):
-        """
-        Anima el movimiento del dron a lo largo de la trayectoria.
-        """
-        if index < len(trayectoria):
-            fila, columna = trayectoria[index]
-            x = columna * 50 + 25
-            y = fila * 50 + 25
-
-            # Mover el dron a la nueva posición
-            self.canvas.delete("dron")  # Eliminar la imagen anterior del dron
-            self.canvas.create_image(x, y, image=self.imagenes[2], tags="dron")
-
-            # Llamar a la función nuevamente después de un tiempo
-            self.ventana.after(500, lambda: self.mover_dron(trayectoria, index + 1))
-        else:
-            messagebox.showinfo("Búsqueda", "El dron ha llegado al destino.")
+    def start(self): 
+        if not self.map:
+            return None
+        #todo
