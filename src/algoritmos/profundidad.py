@@ -13,7 +13,7 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
         index += 1
         print('Iteración', index)
 
-        node = stack.pop()  # DFS usa .pop(), no .popleft()
+        node = stack.popleft() # DFS usa .pop(), no .popleft()
         print("Posición", node.pos)
 
         # Verificar si se completaron los paquetes
@@ -32,7 +32,7 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
             Movement.RIGHT,
             Movement.DOWN
         ]
-
+        indexNode = 0
         for movimiento in movimientos:
             nueva_pos = node.ir(matriz, movimiento)
             if nueva_pos["valor"] != 1:  # No es un obstáculo
@@ -44,9 +44,11 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
                     operador=nueva_pos["operador"],
                     posicion_objetivos=node.posicion_objetivos
                 )
+                
                 if not nuevo_nodo.evitar_ciclos():
                     nodos_expandidos += 1
-                    stack.append(nuevo_nodo)
+                    stack.insert(indexNode, nuevo_nodo)
+                    indexNode += 1
 
     print('Sin solución')
     return None
