@@ -13,7 +13,7 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
         index += 1
         print('Iteración', index)
 
-        node = stack.popleft() # DFS usa .pop(), no .popleft()
+        node = stack.popleft()
         print("Posición", node.pos)
 
         # Verificar si se completaron los paquetes
