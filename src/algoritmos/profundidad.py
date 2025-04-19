@@ -8,6 +8,7 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
 
     index = 0
     nodos_expandidos = 1
+    profundida_arbol = 0
 
     while stack:
         index += 1
@@ -23,7 +24,7 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
             node.mostrar_costo()
             node.mostrar_profundidad()
             print('Solución encontrada')
-            return [node, nodos_expandidos]
+            return [node, nodos_expandidos, profundida_arbol]
 
         # Expandir
         movimientos = [
@@ -49,6 +50,8 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
                     nodos_expandidos += 1
                     stack.insert(indexNode, nuevo_nodo)
                     indexNode += 1
+                    if nuevo_nodo.profundidad > profundida_arbol:
+                        profundida_arbol = nuevo_nodo.profundidad
 
     print('Sin solución')
-    return None, nodos_expandidos
+    return None, nodos_expandidos, profundida_arbol
