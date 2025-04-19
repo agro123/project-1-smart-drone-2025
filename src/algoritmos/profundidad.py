@@ -14,10 +14,9 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
         index += 1
         print('Iteración', index)
 
-        node = stack.popleft()
+        node: Nodo = stack.pop()
         print("Posición", node.pos)
 
-        # Verificar si se completaron los paquetes
         cajas_restantes = node.verificar_caja()
         print("Cajas restantes", cajas_restantes)
         if len(cajas_restantes) == 0:
@@ -26,17 +25,17 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
             print('Solución encontrada')
             return [node, nodos_expandidos, profundida_arbol]
 
-        # Expandir
+        # Orden de prioridad:
         movimientos = [
             Movement.LEFT,
             Movement.TOP,
             Movement.RIGHT,
-            Movement.DOWN
+            Movement.DOWN,
         ]
-        indexNode = 0
-        for movimiento in movimientos:
+        # Para que se respete ese orden al usar pila (LIFO), insertamos al revés
+        for movimiento in reversed(movimientos):
             nueva_pos = node.ir(matriz, movimiento)
-            if nueva_pos["valor"] != 1:  # No es un obstáculo
+            if nueva_pos["valor"] != 1:
                 nuevo_nodo = Nodo(
                     pos=nueva_pos["n_pos"],
                     padre=node,
@@ -48,8 +47,7 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
                 
                 if not nuevo_nodo.evitar_ciclos():
                     nodos_expandidos += 1
-                    stack.insert(indexNode, nuevo_nodo)
-                    indexNode += 1
+                    stack.append(nuevo_nodo)  # Se respeta el orden por el reversed
                     if nuevo_nodo.profundidad > profundida_arbol:
                         profundida_arbol = nuevo_nodo.profundidad
 
