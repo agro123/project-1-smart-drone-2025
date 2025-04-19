@@ -19,7 +19,7 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
         # Verificar si se completaron los paquetes
         cajas_restantes = node.verificar_caja()
         print("Cajas restantes", cajas_restantes)
-        if cajas_restantes == 0:
+        if len(cajas_restantes) == 0:
             node.mostrar_costo()
             node.mostrar_profundidad()
             print('Solución encontrada')
@@ -42,7 +42,7 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
                     profundidad=node.profundidad + 1,
                     costo=node.costo + nueva_pos["costo"],
                     operador=nueva_pos["operador"],
-                    posicion_objetivos=node.posicion_objetivos
+                    posicion_objetivos=cajas_restantes
                 )
                 
                 if not nuevo_nodo.evitar_ciclos():
