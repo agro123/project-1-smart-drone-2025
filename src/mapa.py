@@ -428,6 +428,12 @@ class InterfazDronGUI:
             # Guardar la posición actual como anterior para el próximo paso
             dron_actual = (i, j)
 
+          # Verificar si quedan cajas (valor 4) en el mapa
+            cajas_restantes = any(4 in fila for fila in matriz)
+            if not cajas_restantes and not camino:  # Si no quedan cajas y terminó el camino
+                messagebox.showinfo("Búsqueda finalizada", "¡El dron ha recogido todas las cajas!")
+                return   
+
             self._after_id = self.ventana.after(300, mover)
         mover()
 

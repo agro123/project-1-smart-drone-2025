@@ -31,7 +31,6 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
             Movement.DOWN,
             Movement.LEFT
         ]
-
         # Para que se respete ese orden al usar pila (LIFO), insertamos al revés
         for movimiento in reversed(movimientos):
             nueva_pos = node.ir(matriz, movimiento)
@@ -44,6 +43,7 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
                     operador=nueva_pos["operador"],
                     posicion_objetivos=node.posicion_objetivos
                 )
+                
                 if not nuevo_nodo.evitar_ciclos():
                     nodos_expandidos += 1
                     stack.append(nuevo_nodo)  # Se respeta el orden por el reversed
