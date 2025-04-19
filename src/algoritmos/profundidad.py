@@ -13,10 +13,9 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
         index += 1
         print('Iteración', index)
 
-        node = stack.pop()  # DFS usa .pop(), no .popleft()
+        node = stack.pop()
         print("Posición", node.pos)
 
-        # Verificar si se completaron los paquetes
         cajas_restantes = node.verificar_caja()
         print("Cajas restantes", cajas_restantes)
         if cajas_restantes == 0:
@@ -25,17 +24,18 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
             print('Solución encontrada')
             return [node, nodos_expandidos]
 
-        # Expandir
+        # Orden natural de prioridad: arriba → derecha → abajo → izquierda
         movimientos = [
-            Movement.LEFT,
             Movement.TOP,
             Movement.RIGHT,
-            Movement.DOWN
+            Movement.DOWN,
+            Movement.LEFT
         ]
 
-        for movimiento in movimientos:
+        # Para que se respete ese orden al usar pila (LIFO), insertamos al revés
+        for movimiento in reversed(movimientos):
             nueva_pos = node.ir(matriz, movimiento)
-            if nueva_pos["valor"] != 1:  # No es un obstáculo
+            if nueva_pos["valor"] != 1:
                 nuevo_nodo = Nodo(
                     pos=nueva_pos["n_pos"],
                     padre=node,
@@ -46,7 +46,7 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
                 )
                 if not nuevo_nodo.evitar_ciclos():
                     nodos_expandidos += 1
-                    stack.append(nuevo_nodo)
+                    stack.append(nuevo_nodo)  # Se respeta el orden por el reversed
 
     print('Sin solución')
     return None
