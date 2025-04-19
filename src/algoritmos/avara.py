@@ -16,29 +16,30 @@ def avara(matriz, pos = (0,0), goals_positions = []):
 
     index = 0
     nodos_expandidos = 1
+    profundida_arbol = 0
 
     while queue:
         index = index + 1
-        print('Iteracion ', index)
+        #print('Iteracion ', index)
 
         node = queue.popleft()
-        print("Posición ", node.pos)
+        #print("Posición ", node.pos)
 
         #Verificar si se completaron los paquetes
         cajas_restantes = node.verificar_caja()
-        print("Cajas restantes", cajas_restantes)
-        if  cajas_restantes == 0:
+        #print("Cajas restantes", cajas_restantes)
+        if  len(cajas_restantes) == 0:
             node.mostrar_costo()
             node.mostrar_profundidad()
             print('Solucion encontrada')
-            return [node, nodos_expandidos]
+            return [node, nodos_expandidos, profundida_arbol]
 
         #Expandir
         movimientos = [
             Movement.LEFT,
             Movement.TOP,
             Movement.RIGHT,
-            Movement.DOWN
+            Movement.DOWN,
         ]
 
         for movimiento in movimientos:
@@ -50,11 +51,12 @@ def avara(matriz, pos = (0,0), goals_positions = []):
                     profundidad=node.profundidad + 1,
                     costo=node.costo + nueva_pos["costo"],
                     operador=nueva_pos["operador"],
-                    posicion_objetivos=node.posicion_objetivos
+                    posicion_objetivos=cajas_restantes
                 )
                 if not nuevo_nodo.evitar_ciclos():
                     nodos_expandidos = nodos_expandidos + 1
                     queue = insertar_ordenado(queue, nuevo_nodo)
-
+                    if nuevo_nodo.profundidad > profundida_arbol:
+                        profundida_arbol = nuevo_nodo.profundidad
     print('Sin solucion')
-    return None, nodos_expandidos  # Cambiado: devuelve siempre una tupla
+    return None, nodos_expandidos, profundida_arbol  # Cambiado: devuelve siempre una tupla

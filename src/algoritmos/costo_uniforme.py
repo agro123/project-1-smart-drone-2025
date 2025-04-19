@@ -17,6 +17,7 @@ def costo_uniforme(matriz, pos = (0,0), goals_positions = []):
 
     index = 0
     nodos_expandidos = 1
+    profundida_arbol = 0
 
     while queue:
         index = index + 1
@@ -29,11 +30,11 @@ def costo_uniforme(matriz, pos = (0,0), goals_positions = []):
         cajas_restantes = node.verificar_caja()
         print("Cajas restantes ", cajas_restantes)
         print("Posición ", node.pos)
-        if  cajas_restantes == 0:
+        if  len(cajas_restantes) == 0:
             node.mostrar_costo()
             node.mostrar_profundidad()
             print('Solucion encontrada')
-            return [node, nodos_expandidos]
+            return [node, nodos_expandidos, profundida_arbol]
 
         #Expandir
         movimientos = [
@@ -52,11 +53,13 @@ def costo_uniforme(matriz, pos = (0,0), goals_positions = []):
                     profundidad=node.profundidad + 1,
                     costo=node.costo + nueva_pos["costo"],
                     operador=movimiento,
-                    posicion_objetivos=node.posicion_objetivos
+                    posicion_objetivos=cajas_restantes
                 )
                 if not nuevo_nodo.evitar_ciclos():
                     nodos_expandidos = nodos_expandidos + 1
+                    if nuevo_nodo.profundidad > profundida_arbol:
+                        profundida_arbol = nuevo_nodo.profundidad
                     queue = insertar_ordenado(queue, nuevo_nodo)
 
     print('Sin solucion')
-    return None, nodos_expandidos  # Cambiado: devuelve siempre una tupla
+    return None, nodos_expandidos, profundida_arbol  # Cambiado: devuelve siempre una tupla
