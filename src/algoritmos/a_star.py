@@ -56,4 +56,4 @@ def a_star(matriz, pos = (0,0), goals_positions = []):
                     nodos_expandidos = nodos_expandidos + 1
                     queue = insertar_ordenado(queue, nuevo_nodo)
     print('Sin solucion')
-    return None
+    return None, nodos_expandidos  # Cambiado: devuelve siempre una tupla

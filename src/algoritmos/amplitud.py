@@ -48,4 +48,4 @@ def amplitud(matriz, pos = (0,0), goals_positions = []):
                     nodos_expandidos = nodos_expandidos + 1
                     queue.append(nuevo_nodo)
     print('Sin solucion')
-    return None
+    return None, nodos_expandidos  # Cambiado: devuelve siempre una tupla
