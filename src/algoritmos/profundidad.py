@@ -51,4 +51,4 @@ def profundidad(matriz, pos=(0, 0), goals_positions=[]):
                     indexNode += 1
 
     print('Sin solución')
-    return None
+    return None, nodos_expandidos
