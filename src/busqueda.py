@@ -22,18 +22,19 @@ def busqueda(search_type, matriz):
 
     nodo_final = None
     nodos_expandidos = 0
+    profundiad_arbol = 0
     inicio = time.time() * 1000  # Tiempo inicial
 
     if SearchType(search_type) == SearchType.AMPLITUD:
-        nodo_final, nodos_expandidos = amplitud(matriz, initial_pos, goalsPos)
+        nodo_final, nodos_expandidos, profundiad_arbol = amplitud(matriz, initial_pos, goalsPos)
     elif SearchType(search_type) == SearchType.COSTO_UNIFORME:
-        nodo_final, nodos_expandidos = costo_uniforme(matriz, initial_pos, goalsPos)
+        nodo_final, nodos_expandidos, profundiad_arbol = costo_uniforme(matriz, initial_pos, goalsPos)
     elif SearchType(search_type) == SearchType.AVARA:
-        nodo_final, nodos_expandidos = avara(matriz, initial_pos, goalsPos)
+        nodo_final, nodos_expandidos, profundiad_arbol = avara(matriz, initial_pos, goalsPos)
     elif SearchType(search_type) == SearchType.A_START:
-        nodo_final, nodos_expandidos = a_star(matriz, initial_pos, goalsPos)
+        nodo_final, nodos_expandidos, profundiad_arbol = a_star(matriz, initial_pos, goalsPos)
     elif SearchType(search_type) == SearchType.PROFUNDIDAD:
-        nodo_final, nodos_expandidos = profundidad(matriz, initial_pos, goalsPos)
+        nodo_final, nodos_expandidos, profundiad_arbol = profundidad(matriz, initial_pos, goalsPos)
 
     fin = time.time() * 1000  # Tiempo final
     tiempo_ejecucion = fin - inicio
@@ -43,7 +44,7 @@ def busqueda(search_type, matriz):
     else:
         print("✅ ¡Ruta encontrada!")
 
-    return [nodo_final, nodos_expandidos, tiempo_ejecucion]
+    return [nodo_final, nodos_expandidos, tiempo_ejecucion, profundiad_arbol]
 
 # Ejemplo de ejecución
 # exampleValue = [

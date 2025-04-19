@@ -198,7 +198,7 @@ class InterfazDronGUI:
 
         self.label_profundidad = tk.Label(
             self.frame_info,
-            text="Profundidad: N/A",
+            text="Profundidad árbol: N/A",
             bg='#2C3E50',
             fg='white',
             font=("Arial", 12)
@@ -363,10 +363,10 @@ class InterfazDronGUI:
             messagebox.showerror("Error", "Seleccione un algoritmo de búsqueda.")
 
         if result[0] :
-            nodo_final, nodos_expandidos, tiempo_ejecucion = result
+            nodo_final, nodos_expandidos, tiempo_ejecucion, profundiad_arbol = result
             #result es tipo [nodo, nodos_expandidos, tiempo_ejecucion]
             self.label_costo.config(text=f"Costo: {nodo_final.costo}")
-            self.label_profundidad.config(text=f"Profundidad: {nodo_final.profundidad}")
+            self.label_profundidad.config(text=f"Profundidad árbol: {profundiad_arbol}")
             self.label_nodos_expandidos.config(text=f"Nodos expandidos: {nodos_expandidos}")
             self.label_tiempo_computo.config(text=f"Tiempo de cómputo: {tiempo_ejecucion} ms")
 
