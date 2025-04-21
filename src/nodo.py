@@ -56,9 +56,11 @@ class Nodo:
 
     def verificar_caja(self):
         if  self.pos in self.posicion_objetivos:
-            self.posicion_objetivos.remove(self.pos)
+            posicion_objetivos = copy.deepcopy(self.posicion_objetivos)
+            posicion_objetivos.remove(self.pos)
+            return posicion_objetivos
         
-        return len(self.posicion_objetivos)
+        return self.posicion_objetivos
 
     def evitar_ciclos(self):
         #Para evitar ciclos
