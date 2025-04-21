@@ -1,50 +1,41 @@
 from nodo import Nodo, Movement
 from collections import deque
 
-def insertar_ordenado(lista: deque[Nodo], nodo: Nodo) -> deque[Nodo]:
-    for i, n in enumerate(lista):
-        if nodo.h <= n.h:
-            lista.insert(i, nodo)
-            return lista
-    lista.append(nodo)
-    return lista
-
-def avara(matriz, pos = (0,0), goals_positions = []):
-    queue = deque()
+def profundidad(matriz, pos=(0, 0), goals_positions=[]):
+    stack = deque()
     nodo_inicial = Nodo(pos=pos, posicion_objetivos=goals_positions)
-    queue.append(nodo_inicial)
+    stack.append(nodo_inicial)
 
     index = 0
     nodos_expandidos = 1
     profundida_arbol = 0
 
-    while queue:
-        index = index + 1
-        #print('Iteracion ', index)
+    while stack:
+        index += 1
+        print('Iteración', index)
 
-        node = queue.popleft()
-        #print("Posición ", node.pos)
+        node: Nodo = stack.pop()
+        print("Posición", node.pos)
 
-        #Verificar si se completaron los paquetes
         cajas_restantes = node.verificar_caja()
-        #print("Cajas restantes", cajas_restantes)
-        if  len(cajas_restantes) == 0:
+        print("Cajas restantes", cajas_restantes)
+        if len(cajas_restantes) == 0:
             node.mostrar_costo()
             node.mostrar_profundidad()
-            print('Solucion encontrada')
+            print('Solución encontrada')
             return [node, nodos_expandidos, profundida_arbol]
 
-        #Expandir
+        # Orden de prioridad:
         movimientos = [
             Movement.LEFT,
             Movement.TOP,
             Movement.RIGHT,
             Movement.DOWN,
         ]
-
-        for movimiento in movimientos:
+        # Para que se respete ese orden al usar pila (LIFO), insertamos al revés
+        for movimiento in reversed(movimientos):
             nueva_pos = node.ir(matriz, movimiento)
-            if nueva_pos["valor"] != 1:  # No es un obstáculo
+            if nueva_pos["valor"] != 1:
                 nuevo_nodo = Nodo(
                     pos=nueva_pos["n_pos"],
                     padre=node,
@@ -53,10 +44,12 @@ def avara(matriz, pos = (0,0), goals_positions = []):
                     operador=nueva_pos["operador"],
                     posicion_objetivos=cajas_restantes
                 )
+                
                 if not nuevo_nodo.evitar_ciclos():
-                    nodos_expandidos = nodos_expandidos + 1
-                    queue = insertar_ordenado(queue, nuevo_nodo)
+                    nodos_expandidos += 1
+                    stack.append(nuevo_nodo)  # Se respeta el orden por el reversed
                     if nuevo_nodo.profundidad > profundida_arbol:
                         profundida_arbol = nuevo_nodo.profundidad
-    print('Sin solucion')
-    return None, nodos_expandidos, profundida_arbol  # Cambiado: devuelve siempre una tupla
+
+    print('Sin solución')
+    return None, nodos_expandidos, profundida_arbol

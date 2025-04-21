@@ -44,7 +44,7 @@ class Nodo:
         elif(movement == Movement.DOWN):
             fila = fila + 1
         #Verificar que no supere las dimensiones de la matriz
-        if fila < 0 or columna < 0 or columna > MAP_SIZE - 1 or fila > MAP_SIZE - 1 or (self.padre and self.padre.pos == (fila, columna)):
+        if fila < 0 or columna < 0 or columna > MAP_SIZE - 1 or fila > MAP_SIZE - 1:
             return {"valor": 1}
 
         return {
@@ -57,15 +57,14 @@ class Nodo:
     def verificar_caja(self):
         if  self.pos in self.posicion_objetivos:
             self.posicion_objetivos.remove(self.pos)
-        # Actualizar heurística después de recoger paquete
-        self.h = menor_distancia_manhattan(self.pos, self.posicion_objetivos)
+        
         return len(self.posicion_objetivos)
 
     def evitar_ciclos(self):
         #Para evitar ciclos
         padre = self.padre
         while padre:
-            if padre.pos == self.pos:
+            if padre.pos == self.pos and len(padre.posicion_objetivos) == len(self.posicion_objetivos):
                 return True
             padre = padre.padre
         return False
