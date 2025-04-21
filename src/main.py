@@ -8,4 +8,4 @@ def main():
     InterfazDronGUI()  # Crea una instancia de la interfaz gráfica
 
 if __name__ == "__main__":
-    main()  # Ejecuta la función principal
+    main()  # Ejecuta la función principal   

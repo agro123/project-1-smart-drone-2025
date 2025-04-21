@@ -57,7 +57,8 @@ class Nodo:
     def verificar_caja(self):
         if  self.pos in self.posicion_objetivos:
             self.posicion_objetivos.remove(self.pos)
-        
+        # Actualizar heurística después de recoger paquete
+        self.h = menor_distancia_manhattan(self.pos, self.posicion_objetivos)
         return len(self.posicion_objetivos)
 
     def evitar_ciclos(self):
